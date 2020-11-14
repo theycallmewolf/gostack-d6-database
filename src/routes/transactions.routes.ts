@@ -9,7 +9,10 @@ import CreateTransactionService from '../services/CreateTransactionService';
 const transactionsRouter = Router();
 
 transactionsRouter.get('/', async (request, response) => {
-  // TODO
+  const transactionsRepo = getCustomRepository(TransactionsRepo);
+  const all = await transactionsRepo.find();
+
+  return response.json(all);
 });
 
 transactionsRouter.post('/', async (request, response) => {
