@@ -1,5 +1,4 @@
 // import AppError from '../errors/AppError';
-
 import { getRepository } from 'typeorm';
 import Transaction from '../models/Transaction';
 import CreateCategoryService from './CreateCategoryService';
@@ -18,11 +17,11 @@ class CreateTransactionService {
     type,
     category,
   }: Request): Promise<Transaction> {
-    const categoryNormalized = category.toLowerCase();
-
+    //
     const createCategory = new CreateCategoryService();
-    const newCategory = await createCategory.execute(categoryNormalized);
+    const newCategory = await createCategory.execute(category);
 
+    //
     const transactionsRepository = getRepository(Transaction);
     const transaction = transactionsRepository.create({
       title,
