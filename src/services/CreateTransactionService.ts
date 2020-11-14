@@ -1,6 +1,7 @@
-// import AppError from '../errors/AppError';
-import { getRepository } from 'typeorm';
+import { getCustomRepository } from 'typeorm';
+import AppError from '../errors/AppError';
 import Transaction from '../models/Transaction';
+import TransactionsRepo from '../repositories/TransactionsRepository';
 import CreateCategoryService from './CreateCategoryService';
 
 interface Request {
@@ -17,20 +18,26 @@ class CreateTransactionService {
     type,
     category,
   }: Request): Promise<Transaction> {
-    //
+    const transactionsRepo = getCustomRepository(TransactionsRepo);
     const createCategory = new CreateCategoryService();
+
+    const all = await transactionsRepo.find();
+    const balance = await transactionsRepo.getBalance(all);
+
+    if (type === 'outcome' && value > balance.total) {
+      throw new AppError('not enough credit');
+    }
+
     const newCategory = await createCategory.execute(category);
 
-    //
-    const transactionsRepository = getRepository(Transaction);
-    const transaction = transactionsRepository.create({
+    const transaction = transactionsRepo.create({
       title,
       value,
       type,
       category_id: newCategory.id,
     });
 
-    await transactionsRepository.save(transaction);
+    await transactionsRepo.save(transaction);
 
     return transaction;
   }
