@@ -24,6 +24,10 @@ class CreateTransactionService {
     const all = await transactionsRepo.find();
     const balance = await transactionsRepo.getBalance(all);
 
+    if (type !== 'income' && type !== 'outcome') {
+      throw new AppError('invalid type');
+    }
+
     if (type === 'outcome' && value > balance.total) {
       throw new AppError('not enough credit');
     }
